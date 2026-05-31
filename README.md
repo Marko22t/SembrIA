@@ -2,15 +2,14 @@
 
 > Plataforma de inteligencia artificial para agricultores del departamento de Santa Cruz, Bolivia. Diagnostica enfermedades de cultivos por texto o foto, conecta a productores en un marketplace P2P y muestra alertas fitosanitarias en tiempo real.
 
+🚀 **[Prueba la aplicación en vivo aquí](https://sembr-ia.vercel.app/#)**
 ---
 ## 📺 Video de Presentación
 
 Puedes ver el video de presentación del proyecto haciendo clic en el siguiente enlace:
 👉 [Ver video de presentación en YouTube](https://youtu.be/0KsaTHf7_Hw)
 
-# 🌱 SembrIA — Diagnóstico Agrícola con IA para Bolivia
 
-🚀 **[Prueba la aplicación en vivo aquí](https://sembr-ia.vercel.app/#)**
 
 ## ✨ Funcionalidades principales
 
