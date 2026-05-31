@@ -376,7 +376,7 @@ export default function App() {
       )}
 
       {/* Main Pages viewport body (Adjusted for Fixed top header margin) */}
-      <main className="flex-1">
+      <main className={`flex-1 ${activeTab === 'home' ? 'pt-0' : 'pt-20'}`}>
         {activeTab !== 'home' && subStatus && isFreePlan(subStatus.plan) && !subStatus?.ilimitado && (
           <UsageBar
             usados={subStatus.diagnosticos_mes ?? subStatus.diagnosticos_hoy}
