@@ -6,6 +6,8 @@ import {
   buildTextoUsuario,
   buildRespuestaDesdeResultado
 } from '../utils/diagnosticoStorage.js';
+import UsageBar from '../components/UsageBar.jsx';
+import { isFreePlan } from '../utils/planUtils.js';
 
 const DEMO_RESULT = {
   problema: 'Roya Asiática de la Soya',
@@ -51,7 +53,9 @@ export default function Diagnosis({
   onRecommendRedirect,
   token,
   onLimitReached,
-  onDiagnosisDone
+  onDiagnosisDone,
+  subStatus,
+  onUpgrade
 }) {
   const [cultivo, setCultivo] = useState('Soya');
   const [zona, setZona] = useState('Norte Integrado');
@@ -269,8 +273,8 @@ export default function Diagnosis({
       } else {
         setError(
           err.response?.data?.mensaje ||
-            err.response?.data?.error ||
-            'No se pudo realizar el diagnóstico. Intenta nuevamente.'
+          err.response?.data?.error ||
+          'No se pudo realizar el diagnóstico. Intenta nuevamente.'
         );
       }
     } finally {
@@ -320,6 +324,14 @@ export default function Diagnosis({
   return (
     <div className="max-w-4xl mx-auto px-4 py-12 pb-24">
 
+      {subStatus && isFreePlan(subStatus.plan) && !subStatus?.ilimitado && (
+        <UsageBar
+          usados={subStatus.diagnosticos_mes ?? subStatus.diagnosticos_hoy}
+          limite={subStatus.limite_gratis || 10}
+          onUpgrade={onUpgrade}
+        />
+      )}
+
       {showDemo && (
         <button
           type="button"
@@ -330,7 +342,7 @@ export default function Diagnosis({
           ▶ Ver Demo
         </button>
       )}
-      
+
       <div className="text-center max-w-2xl mx-auto mb-12">
         <h2 className="text-3xl font-extrabold text-primary-dark tracking-tight">
           Diagnostica tu cultivo
@@ -341,7 +353,7 @@ export default function Diagnosis({
       </div>
 
       <div className="bg-white border border-gray-100 rounded-3xl p-6 sm:p-10 shadow-md">
-        
+
         {/* Selector de Cultivo y Zona */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
           <div className="space-y-1.5">
@@ -382,21 +394,19 @@ export default function Diagnosis({
         <div className="flex border-b border-gray-100 mb-8">
           <button
             onClick={() => { setActiveTab('text'); setError(''); }}
-            className={`flex items-center gap-2.5 pb-4 px-6 font-bold text-sm outline-none border-b-2 transition-all ${
-              activeTab === 'text'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-gray-400 hover:text-gray-600'
-            }`}
+            className={`flex items-center gap-2.5 pb-4 px-6 font-bold text-sm outline-none border-b-2 transition-all ${activeTab === 'text'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-400 hover:text-gray-600'
+              }`}
           >
             <FileText className="w-4 h-4" /> Describir síntomas
           </button>
           <button
             onClick={() => { setActiveTab('image'); setError(''); }}
-            className={`flex items-center gap-2.5 pb-4 px-6 font-bold text-sm outline-none border-b-2 transition-all ${
-              activeTab === 'image'
-                ? 'border-primary text-primary'
-                : 'border-transparent text-gray-400 hover:text-gray-600'
-            }`}
+            className={`flex items-center gap-2.5 pb-4 px-6 font-bold text-sm outline-none border-b-2 transition-all ${activeTab === 'image'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-gray-400 hover:text-gray-600'
+              }`}
           >
             <Camera className="w-4 h-4" /> Subir foto de muestra
           </button>
@@ -430,7 +440,7 @@ export default function Diagnosis({
                 accept="image/*"
                 id="hiddenFileInput"
               />
-              
+
               {/* Drag and drop zone */}
               {!imagePreview ? (
                 <div
@@ -439,11 +449,10 @@ export default function Diagnosis({
                   onDragLeave={handleDrag}
                   onDrop={handleDrop}
                   onClick={handleTriggerFile}
-                  className={`border-2 border-dashed rounded-2xl py-12 px-6 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-4 ${
-                    dragActive 
-                      ? 'border-primary bg-green-50' 
-                      : 'border-gray-200 hover:border-primary hover:bg-green-50 bg-gray-50 bg-opacity-50'
-                  }`}
+                  className={`border-2 border-dashed rounded-2xl py-12 px-6 text-center cursor-pointer transition-all duration-300 flex flex-col items-center justify-center gap-4 ${dragActive
+                    ? 'border-primary bg-green-50'
+                    : 'border-gray-200 hover:border-primary hover:bg-green-50 bg-gray-50 bg-opacity-50'
+                    }`}
                 >
                   <div className="w-16 h-16 bg-white shadow-sm rounded-full flex items-center justify-center text-primary">
                     <Upload className="w-6 h-6" />
@@ -459,9 +468,9 @@ export default function Diagnosis({
               ) : (
                 <div className="flex flex-col items-center justify-center p-4 border border-gray-100 rounded-2xl bg-gray-50">
                   <div className="relative rounded-xl overflow-hidden border border-white shadow-md max-w-sm w-full">
-                    <img 
-                      src={imagePreview} 
-                      alt="Previsualización del cultivo" 
+                    <img
+                      src={imagePreview}
+                      alt="Previsualización del cultivo"
                       className="w-full h-56 object-cover block"
                     />
                     <button
@@ -518,158 +527,157 @@ export default function Diagnosis({
           const causaTexto = resultado.causa || resultado.descripcion_visual || '';
           const tratamientos = resultado.tratamiento || [];
           return (
-          <div className="mt-12 border border-green-200 rounded-3xl bg-green-50 bg-opacity-20 p-6 sm:p-8 animate-in slide-in-from-bottom-8 duration-500 relative">
-            {resultado._demo && (
-              <span className="absolute top-4 right-4 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">
-                Demo
-              </span>
-            )}
-            
-            <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-green-100 pb-6 mb-6">
-              <div>
-                {diagnosticoMeta?.numero_diagnostico && (
-                  <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">
-                    Diagnóstico #{diagnosticoMeta.numero_diagnostico}
-                    {diagnosticoMeta.diagnosticos_mes != null &&
-                      ` · ${diagnosticoMeta.diagnosticos_mes} este mes`}
-                  </p>
-                )}
-                <h3 className="text-2xl font-black text-primary-dark">{resultado.problema}</h3>
-                {causaTexto && <p className="text-sm text-gray-500 font-medium italic mt-1">{causaTexto}</p>}
-                {resultado.certeza && (
-                  <p className="text-xs text-gray-400 mt-2 font-semibold">Certeza del diagnóstico: {resultado.certeza || resultado.confianza}</p>
-                )}
-                {saveError && (
-                  <p className="text-xs text-orange-500 mt-2">
-                    ⚠️ No se pudo guardar en historial, pero aquí está tu diagnóstico.
-                  </p>
-                )}
-              </div>
-              <span className={`badge border font-black text-xs px-3.5 py-1.5 rounded-full ${
-                urgencia === 'BAJA' 
+            <div className="mt-12 border border-green-200 rounded-3xl bg-green-50 bg-opacity-20 p-6 sm:p-8 animate-in slide-in-from-bottom-8 duration-500 relative">
+              {resultado._demo && (
+                <span className="absolute top-4 right-4 bg-red-600 text-white text-[10px] font-black px-2 py-1 rounded uppercase tracking-wider">
+                  Demo
+                </span>
+              )}
+
+              <div className="flex flex-col sm:flex-row justify-between items-start gap-4 border-b border-green-100 pb-6 mb-6">
+                <div>
+                  {diagnosticoMeta?.numero_diagnostico && (
+                    <p className="text-xs font-bold text-primary uppercase tracking-wider mb-1">
+                      Diagnóstico #{diagnosticoMeta.numero_diagnostico}
+                      {diagnosticoMeta.diagnosticos_mes != null &&
+                        ` · ${diagnosticoMeta.diagnosticos_mes} este mes`}
+                    </p>
+                  )}
+                  <h3 className="text-2xl font-black text-primary-dark">{resultado.problema}</h3>
+                  {causaTexto && <p className="text-sm text-gray-500 font-medium italic mt-1">{causaTexto}</p>}
+                  {resultado.certeza && (
+                    <p className="text-xs text-gray-400 mt-2 font-semibold">Certeza del diagnóstico: {resultado.certeza || resultado.confianza}</p>
+                  )}
+                  {saveError && (
+                    <p className="text-xs text-orange-500 mt-2">
+                      ⚠️ No se pudo guardar en historial, pero aquí está tu diagnóstico.
+                    </p>
+                  )}
+                </div>
+                <span className={`badge border font-black text-xs px-3.5 py-1.5 rounded-full ${urgencia === 'BAJA'
                   ? 'bg-green-100 text-green-700 border-green-200'
                   : urgencia === 'MEDIA'
-                  ? 'bg-amber-100 text-amber-700 border-amber-200'
-                  : 'bg-red-100 text-accent-red border-red-200'
-              }`}>
-                Severidad {resultado.severidad || '?'}/5 • Urgencia {urgencia}
-              </span>
-            </div>
-
-            {/* Signos y diagnóstico diferencial */}
-            <div className="space-y-6">
-              {resultado.signos_observados?.length > 0 && (
-                <div className="bg-white border border-gray-100 rounded-xl p-4 space-y-2">
-                  <h4 className="font-bold text-gray-900 text-sm">Signos observados en la muestra</h4>
-                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                    {resultado.signos_observados.map((s, i) => (
-                      <li key={i}>{s}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {resultado.diagnostico_diferencial?.length > 0 && (
-                <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
-                  <h4 className="font-bold text-blue-900 text-sm">Otras posibilidades (diagnóstico diferencial)</h4>
-                  {resultado.diagnostico_diferencial.map((d, i) => (
-                    <div key={i} className="text-sm border-b border-blue-100 last:border-0 pb-2 last:pb-0">
-                      <span className="font-bold text-blue-800">{d.enfermedad}</span>
-                      <span className="text-xs uppercase font-black text-blue-600 ml-2">
-                        {d.probabilidad}
-                      </span>
-                      <p className="text-gray-600 mt-0.5 text-xs">{d.por_que}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {(resultado.advertencia_confirmacion || (resultado.certeza && resultado.certeza !== 'ALTA')) && (
-                <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900">
-                  <strong>Importante:</strong>{' '}
-                  {resultado.advertencia_confirmacion ||
-                    'Certeza no alta — confirma con un agrónomo antes de comprar tratamientos costosos.'}
-                </div>
-              )}
-
-              <div className="space-y-3">
-                <h4 className="font-bold text-gray-900 flex items-center gap-2.5">
-                  <CheckCircle className="w-5 h-5 text-primary" /> Receta de Tratamiento Agrónomo
-                </h4>
-                <ol className="space-y-3">
-                  {tratamientos.map((step, idx) => (
-                    <li key={idx} className="bg-white border border-gray-100 p-4 rounded-xl flex gap-3 text-sm shadow-sm">
-                      <span className="w-6 h-6 rounded-full bg-green-50 border border-green-200 text-primary font-extrabold flex items-center justify-center flex-shrink-0 text-xs">
-                        {idx + 1}
-                      </span>
-                      <span className="text-gray-700 leading-relaxed font-medium">{step}</span>
-                    </li>
-                  ))}
-                </ol>
+                    ? 'bg-amber-100 text-amber-700 border-amber-200'
+                    : 'bg-red-100 text-accent-red border-red-200'
+                  }`}>
+                  Severidad {resultado.severidad || '?'}/5 • Urgencia {urgencia}
+                </span>
               </div>
 
-              {(resultado.zona_riesgo || resultado.alerta_climatica) && (
-                <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 text-sm flex gap-3 font-semibold items-start">
-                  <AlertTriangle className="w-5 h-5 text-accent-amber flex-shrink-0 mt-0.5" />
-                  <span>
-                    {resultado.alerta_climatica ? (
-                      <><strong>Alerta climática:</strong> {resultado.alerta_climatica}</>
-                    ) : (
-                      <><strong>Zona de riesgo:</strong> {resultado.zona_riesgo}. Actuar: {resultado.cuando_actuar || 'lo antes posible'}.</>
-                    )}
-                  </span>
-                </div>
-              )}
+              {/* Signos y diagnóstico diferencial */}
+              <div className="space-y-6">
+                {resultado.signos_observados?.length > 0 && (
+                  <div className="bg-white border border-gray-100 rounded-xl p-4 space-y-2">
+                    <h4 className="font-bold text-gray-900 text-sm">Signos observados en la muestra</h4>
+                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                      {resultado.signos_observados.map((s, i) => (
+                        <li key={i}>{s}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
 
-              {resultado.medidas_preventivas?.length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-bold text-gray-900 text-sm">Prevención</h4>
-                  <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
-                    {resultado.medidas_preventivas.map((m, i) => (
-                      <li key={i}>{m}</li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              {/* Recommended Products Grid */}
-              {resultado.productos_recomendados && resultado.productos_recomendados.length > 0 && (
-                <div className="space-y-4">
-                  <h4 className="font-bold text-gray-900 flex items-center gap-2">
-                    <HelpCircle className="w-5 h-5 text-primary" /> Agroinsumos Sugeridos para la Compra
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {resultado.productos_recomendados.map((prod, idx) => (
-                      <div key={idx} className="bg-white border border-gray-100 p-5 rounded-2xl flex flex-col justify-between gap-4 shadow-sm hover:shadow transition-all">
-                        <div>
-                          <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Insumo Recomendado</span>
-                          <h5 className="font-bold text-gray-900 mt-1">{prod.nombre}</h5>
-                          <p className="text-xs text-gray-500 mt-1 font-semibold">Dosis: {prod.dosis}</p>
-                        </div>
-                        <div className="flex items-center justify-between border-t border-gray-50 pt-3">
-                          <span className="text-sm font-black text-primary-dark">{prod.precio_estimado_bob} BOB</span>
-                          <button
-                            onClick={() => onRecommendRedirect('Fungicidas')}
-                            className="text-xs text-primary hover:text-primary-dark font-bold flex items-center gap-1 hover:underline outline-none"
-                          >
-                            Comprar en Marketplace <ArrowRight className="w-3.5 h-3.5" />
-                          </button>
-                        </div>
+                {resultado.diagnostico_diferencial?.length > 0 && (
+                  <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 space-y-3">
+                    <h4 className="font-bold text-blue-900 text-sm">Otras posibilidades (diagnóstico diferencial)</h4>
+                    {resultado.diagnostico_diferencial.map((d, i) => (
+                      <div key={i} className="text-sm border-b border-blue-100 last:border-0 pb-2 last:pb-0">
+                        <span className="font-bold text-blue-800">{d.enfermedad}</span>
+                        <span className="text-xs uppercase font-black text-blue-600 ml-2">
+                          {d.probabilidad}
+                        </span>
+                        <p className="text-gray-600 mt-0.5 text-xs">{d.por_que}</p>
                       </div>
                     ))}
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Save Diagnostics warning */}
-              {!usuario && (
-                <div className="text-center bg-gray-50 rounded-xl p-4 border border-gray-100 text-xs text-gray-500 font-semibold">
-                  💡 Inicia sesión para guardar este diagnóstico en tu historial y habilitar tu evaluación crediticia.
+                {(resultado.advertencia_confirmacion || (resultado.certeza && resultado.certeza !== 'ALTA')) && (
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 text-sm text-amber-900">
+                    <strong>Importante:</strong>{' '}
+                    {resultado.advertencia_confirmacion ||
+                      'Certeza no alta — confirma con un agrónomo antes de comprar tratamientos costosos.'}
+                  </div>
+                )}
+
+                <div className="space-y-3">
+                  <h4 className="font-bold text-gray-900 flex items-center gap-2.5">
+                    <CheckCircle className="w-5 h-5 text-primary" /> Receta de Tratamiento Agrónomo
+                  </h4>
+                  <ol className="space-y-3">
+                    {tratamientos.map((step, idx) => (
+                      <li key={idx} className="bg-white border border-gray-100 p-4 rounded-xl flex gap-3 text-sm shadow-sm">
+                        <span className="w-6 h-6 rounded-full bg-green-50 border border-green-200 text-primary font-extrabold flex items-center justify-center flex-shrink-0 text-xs">
+                          {idx + 1}
+                        </span>
+                        <span className="text-gray-700 leading-relaxed font-medium">{step}</span>
+                      </li>
+                    ))}
+                  </ol>
                 </div>
-              )}
+
+                {(resultado.zona_riesgo || resultado.alerta_climatica) && (
+                  <div className="bg-amber-50 border border-amber-200 text-amber-900 rounded-xl p-4 text-sm flex gap-3 font-semibold items-start">
+                    <AlertTriangle className="w-5 h-5 text-accent-amber flex-shrink-0 mt-0.5" />
+                    <span>
+                      {resultado.alerta_climatica ? (
+                        <><strong>Alerta climática:</strong> {resultado.alerta_climatica}</>
+                      ) : (
+                        <><strong>Zona de riesgo:</strong> {resultado.zona_riesgo}. Actuar: {resultado.cuando_actuar || 'lo antes posible'}.</>
+                      )}
+                    </span>
+                  </div>
+                )}
+
+                {resultado.medidas_preventivas?.length > 0 && (
+                  <div className="space-y-2">
+                    <h4 className="font-bold text-gray-900 text-sm">Prevención</h4>
+                    <ul className="list-disc list-inside text-sm text-gray-600 space-y-1">
+                      {resultado.medidas_preventivas.map((m, i) => (
+                        <li key={i}>{m}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* Recommended Products Grid */}
+                {resultado.productos_recomendados && resultado.productos_recomendados.length > 0 && (
+                  <div className="space-y-4">
+                    <h4 className="font-bold text-gray-900 flex items-center gap-2">
+                      <HelpCircle className="w-5 h-5 text-primary" /> Agroinsumos Sugeridos para la Compra
+                    </h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      {resultado.productos_recomendados.map((prod, idx) => (
+                        <div key={idx} className="bg-white border border-gray-100 p-5 rounded-2xl flex flex-col justify-between gap-4 shadow-sm hover:shadow transition-all">
+                          <div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest block">Insumo Recomendado</span>
+                            <h5 className="font-bold text-gray-900 mt-1">{prod.nombre}</h5>
+                            <p className="text-xs text-gray-500 mt-1 font-semibold">Dosis: {prod.dosis}</p>
+                          </div>
+                          <div className="flex items-center justify-between border-t border-gray-50 pt-3">
+                            <span className="text-sm font-black text-primary-dark">{prod.precio_estimado_bob} BOB</span>
+                            <button
+                              onClick={() => onRecommendRedirect('Fungicidas')}
+                              className="text-xs text-primary hover:text-primary-dark font-bold flex items-center gap-1 hover:underline outline-none"
+                            >
+                              Comprar en Marketplace <ArrowRight className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Save Diagnostics warning */}
+                {!usuario && (
+                  <div className="text-center bg-gray-50 rounded-xl p-4 border border-gray-100 text-xs text-gray-500 font-semibold">
+                    💡 Inicia sesión para guardar este diagnóstico en tu historial y habilitar tu evaluación crediticia.
+                  </div>
+                )}
+              </div>
+
             </div>
-
-          </div>
           );
         })()}
 

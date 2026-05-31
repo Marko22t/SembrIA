@@ -30,6 +30,19 @@ export default function App() {
   const [subStatus, setSubStatus] = useState(null);
   const [limitModalOpen, setLimitModalOpen] = useState(false);
   const [historyRefreshKey, setHistoryRefreshKey] = useState(0);
+  const [scrolled, setScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 10) {
+        setScrolled(true);
+      } else {
+        setScrolled(false);
+      }
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const fetchSubStatus = async () => {
     if (!token) {
@@ -163,7 +176,13 @@ export default function App() {
     <div className="flex flex-col min-h-screen bg-bg">
       
       {/* 5. NAVBAR (Fijo superior) */}
-      <nav className="fixed top-0 left-0 w-full h-20 bg-white bg-opacity-80 backdrop-blur-md border-b border-gray-100 z-40 flex items-center justify-between px-6 sm:px-12 transition-all duration-300">
+      <nav className={`fixed z-40 flex items-center justify-between px-6 sm:px-12 transition-all duration-500 ease-in-out ${
+        scrolled
+          ? 'top-4 left-4 right-4 sm:left-6 sm:right-6 md:left-12 md:right-12 h-18 bg-white/90 backdrop-blur-lg border border-gray-200/80 shadow-lg rounded-2xl'
+          : activeTab === 'home'
+          ? 'top-0 left-0 right-0 h-20 bg-transparent border-transparent'
+          : 'top-0 left-0 right-0 h-20 bg-white/80 backdrop-blur-md border-b border-gray-100'
+      }`}>
         <a 
           href="#" 
           onClick={() => setActiveTab('home')}
@@ -354,8 +373,8 @@ export default function App() {
       )}
 
       {/* Main Pages viewport body (Adjusted for Fixed top header margin) */}
-      <main className="flex-1 mt-20">
-        {subStatus && isFreePlan(subStatus.plan) && !subStatus?.ilimitado && (
+      <main className="flex-1">
+        {activeTab !== 'home' && subStatus && isFreePlan(subStatus.plan) && !subStatus?.ilimitado && (
           <UsageBar
             usados={subStatus.diagnosticos_mes ?? subStatus.diagnosticos_hoy}
             limite={subStatus.limite_gratis || 10}

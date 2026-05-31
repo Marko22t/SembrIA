@@ -71,10 +71,10 @@ export default function Home({ onNavigate, clima, climaCargando, onRefreshClima 
   };
 
   return (
-    <div className="pb-24 bg-[#e8f5e9] overflow-hidden">
+    <div className="bg-[#e8f5e9] overflow-hidden">
 
       {/* 1. HERO SECTION CON VIDEO */}
-      <section className="relative w-full min-h-[100vh] flex items-center justify-center text-white overflow-hidden py-32 px-6 sm:px-16">
+      <section className="relative w-full h-screen flex items-center justify-center text-white overflow-hidden px-6 sm:px-16 pt-24">
         <video
           autoPlay
           loop
@@ -105,6 +105,10 @@ export default function Home({ onNavigate, clima, climaCargando, onRefreshClima 
         <div className="absolute bottom-1/3 right-1/5 w-[600px] h-[600px] rounded-full pointer-events-none z-[2]"
           style={{ background: 'radial-gradient(circle, rgba(27,58,31,0.14) 0%, transparent 70%)', filter: 'blur(80px)' }}
         />
+
+        <div className="absolute bottom-0 left-0 w-full h-32 z-[3]" style={{
+          background: 'linear-gradient(to bottom, transparent, #e8f5e9)'
+        }} />
 
         {/* Hero Content */}
         <motion.div
