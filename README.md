@@ -8,6 +8,10 @@
 Puedes ver el video de presentación del proyecto haciendo clic en el siguiente enlace:
 👉 [Ver video de presentación en YouTube](https://youtu.be/0KsaTHf7_Hw)
 
+# 🌱 SembrIA — Diagnóstico Agrícola con IA para Bolivia
+
+🚀 **[Prueba la aplicación en vivo aquí](https://sembr-ia.vercel.app/#)**
+
 ## ✨ Funcionalidades principales
 
 - **Diagnóstico por IA** — Describe los síntomas de tu cultivo o sube una foto y recibe un diagnóstico detallado con nivel de urgencia, tratamiento y productos recomendados (con precios en Bolivianos).
