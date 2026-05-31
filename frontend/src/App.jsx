@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { Leaf, ShoppingCart, Menu, X, LogIn, LogOut, UserCheck } from 'lucide-react';
+import { ShoppingCart, Menu, X, LogIn, LogOut, UserCheck } from 'lucide-react';
+import logoNavbarBlanco from './assets/LogoHorizontalBlanco__1_.png';
+import logoNavbarVerde from './assets/LogoHorizontalVerde.png';
 
 // Importar Pantallas
 import Home from './pages/Home.jsx';
@@ -186,12 +188,13 @@ export default function App() {
         <a 
           href="#" 
           onClick={() => setActiveTab('home')}
-          className="flex items-center gap-3 font-extrabold text-lg sm:text-xl text-primary-dark outline-none hover:scale-102 transition-all duration-300"
+          className="flex items-center outline-none hover:opacity-80 transition-all duration-300"
         >
-          <div className="bg-primary bg-opacity-10 p-2 rounded-xl text-primary">
-            <Leaf className="w-5 h-5" />
-          </div>
-          <span>CropDoctor 🌿</span>
+          <img
+            src={scrolled || activeTab !== 'home' ? logoNavbarVerde : logoNavbarBlanco}
+            alt="SembrIA"
+            className="h-9 w-auto transition-all duration-500"
+          />
         </a>
 
         {/* Desktop links */}
@@ -441,9 +444,7 @@ export default function App() {
         <div className="max-w-6xl mx-auto px-6 py-12 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
             <div className="space-y-4">
-              <h4 className="font-extrabold text-white text-lg flex items-center gap-2.5">
-                <Leaf className="w-5 h-5 text-primary" /> CropDoctor
-              </h4>
+              <img src={logoNavbarBlanco} alt="SembrIA" className="h-8 w-auto" />
               <p className="text-xs text-green-300 leading-relaxed">
                 Potenciando la soberanía alimentaria del oriente boliviano mediante tecnología de IA, logística de insumos justa y créditos agrícolas rápidos.
               </p>
@@ -475,7 +476,7 @@ export default function App() {
             </div>
           </div>
           <div className="border-t border-green-900 pt-6 text-center text-[10px] text-green-400 flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p>&copy; 2026 CropDoctor S.A. Todos los derechos reservados. Hackathon Build With AI 2026.</p>
+            <p>&copy; 2026 SembrIA S.A. Todos los derechos reservados. Hackathon Build With AI 2026.</p>
             <div>Santa Cruz de la Sierra, Bolivia</div>
           </div>
         </div>

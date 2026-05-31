@@ -375,7 +375,7 @@ export default function Home({ onNavigate, clima, climaCargando, onRefreshClima 
           background: 'linear-gradient(to bottom, rgba(0,0,0,0.20), rgba(0,0,0,0.40))'
         }} />
         <div className="relative z-10 h-full flex flex-col items-center justify-center text-center px-6">
-          <span className="text-[#66bb6a] font-black tracking-[0.25em] uppercase text-sm">
+          <span className="text-white font-black tracking-[0.25em] uppercase text-sm">
             Inteligencia Agrícola
           </span>
           <h2 className="mt-6 text-white text-5xl md:text-7xl font-black leading-[0.95] max-w-5xl">
