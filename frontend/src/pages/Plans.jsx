@@ -2,6 +2,11 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import PaymentModal from '../components/PaymentModal.jsx';
 import PlanBadge from '../components/PlanBadge.jsx';
+import {
+  getDiagnosticosUsados,
+  LIMITE_DIAGNOSTICOS_MES
+} from '../utils/diagnosticosUsados.js';
+import { isFreePlan } from '../utils/planUtils.js';
 
 const PLANES = [
   {
@@ -61,6 +66,20 @@ export default function Plans({ usuario, token, onAuthRedirect, onPlanUpdated })
   const [procesando, setProcesando] = useState(false);
   const [exito, setExito] = useState(false);
   const [mensaje, setMensaje] = useState('');
+  const [diagnosticosUsados, setDiagnosticosUsados] = useState(() =>
+    getDiagnosticosUsados()
+  );
+
+  useEffect(() => {
+    const sync = () => setDiagnosticosUsados(getDiagnosticosUsados());
+    sync();
+    window.addEventListener('diagnosticos-usados-actualizar', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('diagnosticos-usados-actualizar', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
 
   useEffect(() => {
     const cargarPlan = async () => {
@@ -136,10 +155,20 @@ export default function Plans({ usuario, token, onAuthRedirect, onPlanUpdated })
       )}
 
       <div className="text-center mb-12">
-        <h2 className="text-3xl font-extrabold text-primary-dark">Planes CropDoctor</h2>
+        <h2 className="text-3xl font-extrabold text-primary-dark">Planes SembrIA</h2>
         <p className="text-gray-500 mt-2 max-w-xl mx-auto">
           El plan gratuito incluye lo esencial. Pro y Empresa desbloquean superpoderes para tu campo.
         </p>
+        {isFreePlan(planActual) && (
+          <div className="mt-4 inline-flex flex-col sm:flex-row items-center gap-2 bg-amber-50 border border-amber-200 text-amber-900 text-sm font-semibold px-4 py-3 rounded-xl">
+            <span>
+              {diagnosticosUsados}/{LIMITE_DIAGNOSTICOS_MES} diagnósticos usados este mes
+            </span>
+            <span className="text-amber-700">
+              · Te quedan {Math.max(0, LIMITE_DIAGNOSTICOS_MES - diagnosticosUsados)} diagnósticos gratis
+            </span>
+          </div>
+        )}
         <div className="mt-3 flex items-center justify-center gap-2 text-sm text-gray-600">
           Tu plan:
           <span className="font-bold capitalize">{planActual}</span>

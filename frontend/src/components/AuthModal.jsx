@@ -188,7 +188,7 @@ export default function AuthModal({ isOpen, onClose, onAuthSuccess }) {
               {loading ? (
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               ) : (
-                isLogin ? 'Ingresar a CropDoctor' : 'Completar Registro'
+                isLogin ? 'Ingresar a SembrIA' : 'Completar Registro'
               )}
             </button>
           </form>

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import axios from 'axios';
 import { Upload, FileText, Camera, AlertTriangle, CheckCircle, ArrowRight, Trash2, HelpCircle } from 'lucide-react';
 import {
@@ -6,8 +6,13 @@ import {
   buildTextoUsuario,
   buildRespuestaDesdeResultado
 } from '../utils/diagnosticoStorage.js';
-import UsageBar from '../components/UsageBar.jsx';
 import { isFreePlan } from '../utils/planUtils.js';
+import {
+  getDiagnosticosUsados,
+  incrementDiagnosticosUsados,
+  isLimiteDiagnosticosAlcanzado,
+  LIMITE_DIAGNOSTICOS_MES
+} from '../utils/diagnosticosUsados.js';
 
 const DEMO_RESULT = {
   problema: 'Roya Asiática de la Soya',
@@ -73,6 +78,27 @@ export default function Diagnosis({
 
   const fileInputRef = useRef(null);
 
+  const esPlanGratuito =
+    !subStatus || (isFreePlan(subStatus.plan) && !subStatus?.ilimitado);
+
+  const [diagnosticosUsados, setDiagnosticosUsados] = useState(() =>
+    getDiagnosticosUsados()
+  );
+
+  const limiteAlcanzado =
+    esPlanGratuito && diagnosticosUsados >= LIMITE_DIAGNOSTICOS_MES;
+
+  useEffect(() => {
+    const sync = () => setDiagnosticosUsados(getDiagnosticosUsados());
+    sync();
+    window.addEventListener('diagnosticos-usados-actualizar', sync);
+    window.addEventListener('storage', sync);
+    return () => {
+      window.removeEventListener('diagnosticos-usados-actualizar', sync);
+      window.removeEventListener('storage', sync);
+    };
+  }, []);
+
   // Drag and Drop State
   const [dragActive, setDragActive] = useState(false);
 
@@ -131,6 +157,11 @@ export default function Diagnosis({
 
   // Ejecutar el diagnóstico fitopatológico
   const handleAnalyze = async () => {
+    if (esPlanGratuito && isLimiteDiagnosticosAlcanzado()) {
+      setError('');
+      return;
+    }
+
     setLoading(true);
     setError('');
     setResultado(null);
@@ -259,6 +290,10 @@ export default function Diagnosis({
         }
       }
 
+      if (esPlanGratuito) {
+        setDiagnosticosUsados(incrementDiagnosticosUsados());
+      }
+
       onDiagnosisDone?.();
     } catch (err) {
       console.error(err);
@@ -324,12 +359,42 @@ export default function Diagnosis({
   return (
     <div className="max-w-4xl mx-auto px-4 py-12 pb-24">
 
-      {subStatus && isFreePlan(subStatus.plan) && !subStatus?.ilimitado && (
-        <UsageBar
-          usados={subStatus.diagnosticos_mes ?? subStatus.diagnosticos_hoy}
-          limite={subStatus.limite_gratis || 10}
-          onUpgrade={onUpgrade}
-        />
+      {esPlanGratuito && (
+        <div className="mb-6 bg-white border border-gray-100 rounded-2xl p-4 shadow-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
+            <p className="text-sm font-bold text-primary-dark">
+              {diagnosticosUsados}/{LIMITE_DIAGNOSTICOS_MES} diagnósticos usados este mes
+            </p>
+            <span className="text-xs font-semibold text-gray-500">
+              {Math.max(0, LIMITE_DIAGNOSTICOS_MES - diagnosticosUsados)} restantes
+            </span>
+          </div>
+          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all duration-500 ${
+                limiteAlcanzado ? 'bg-red-500' : 'bg-primary'
+              }`}
+              style={{
+                width: `${Math.min(100, (diagnosticosUsados / LIMITE_DIAGNOSTICOS_MES) * 100)}%`
+              }}
+            />
+          </div>
+        </div>
+      )}
+
+      {limiteAlcanzado && (
+        <div className="mb-6 bg-amber-50 border border-amber-200 rounded-2xl p-5 text-center space-y-4">
+          <p className="text-sm font-semibold text-amber-900">
+            Alcanzaste el límite del plan gratuito. Actualizá tu plan para continuar.
+          </p>
+          <button
+            type="button"
+            onClick={() => onUpgrade?.()}
+            className="bg-primary hover:bg-primary-dark text-white font-bold px-6 py-3 rounded-xl text-sm transition-all"
+          >
+            Ver planes
+          </button>
+        </div>
       )}
 
       {showDemo && (
@@ -503,7 +568,8 @@ export default function Diagnosis({
           {!loading && (
             <button
               onClick={handleAnalyze}
-              className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2.5 text-base"
+              disabled={limiteAlcanzado}
+              className="w-full bg-primary hover:bg-primary-dark text-white font-bold py-4 rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center gap-2.5 text-base disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-lg"
             >
               <Camera className="w-5 h-5" /> Analizar con IA
             </button>

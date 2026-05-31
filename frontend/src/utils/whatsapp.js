@@ -19,7 +19,7 @@ export const abrirWhatsApp = (numero, publicacion) => {
     : `${publicacion.precio_bob} BOB`;
 
   const mensaje = encodeURIComponent(
-    `Hola! Vi tu publicación en CropDoctor Agro 🌿\n` +
+    `Hola! Vi tu publicación en SembrIA 🌿\n` +
       `*${publicacion.titulo}*\n` +
       `Precio: ${precioTexto}\n` +
       `Zona: ${publicacion.zona_santa_cruz}\n\n` +

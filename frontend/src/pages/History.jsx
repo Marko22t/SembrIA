@@ -30,7 +30,7 @@ function getConversacionLista(diag) {
     diag.respuesta_ia ||
     (diag.resultado_json?.problema
       ? `**${diag.resultado_json.problema}**`
-      : 'Diagnóstico registrado en CropDoctor.');
+      : 'Diagnóstico registrado en SembrIA.');
 
   return [
     { role: 'user', content: userLine, hasImage: diag.tiene_imagen },
@@ -172,7 +172,7 @@ export default function History({
           <h2 className="text-2xl font-extrabold text-primary-dark">Monitoreo Fitosanitario y Dashboard</h2>
           <p className="text-gray-500 text-sm">
             Para ver tu historial de diagnósticos, ventas en el marketplace y el rendimiento de tu
-            campo, inicia sesión en CropDoctor.
+            campo, inicia sesión en SembrIA.
           </p>
         </div>
         <button

@@ -396,8 +396,10 @@ export default function App() {
           <Diagnosis
             usuario={usuario}
             token={token}
+            subStatus={subStatus}
             onRecommendRedirect={handleRecommendRedirect}
             onLimitReached={() => setLimitModalOpen(true)}
+            onUpgrade={() => setActiveTab('planes')}
             onDiagnosisDone={() => {
               fetchSubStatus();
               setHistoryRefreshKey((k) => k + 1);

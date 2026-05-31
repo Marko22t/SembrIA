@@ -382,7 +382,7 @@ export default function Home({ onNavigate, clima, climaCargando, onRefreshClima 
             Detecta plagas antes<br />de perder tu cosecha.
           </h2>
           <p className="mt-8 text-gray-300 text-lg max-w-3xl">
-            CropDoctor combina inteligencia artificial, monitoreo climático y marketplace agrícola
+            SembrIA combina inteligencia artificial, monitoreo climático y marketplace agrícola
             para productores del oriente boliviano.
           </p>
           <button onClick={() => onNavigate('diagnose')}
@@ -423,7 +423,7 @@ export default function Home({ onNavigate, clima, climaCargando, onRefreshClima 
                   <Bot className="w-5 h-5" />
                 </div>
                 <div>
-                  <h4 className="font-extrabold text-sm text-white">Escáner CropDoctor</h4>
+                  <h4 className="font-extrabold text-sm text-white">Escáner SembrIA</h4>
                   <p className="text-[10px] text-[#a5d6a7]/80 font-semibold uppercase tracking-wider">Listo para analizar</p>
                 </div>
               </div>

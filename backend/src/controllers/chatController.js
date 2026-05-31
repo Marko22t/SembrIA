@@ -31,7 +31,7 @@ function respuestaLocal(message, history) {
     return 'El tizón tardío en papa/tomate se dispara con humedad. Suspende riego por aspersión, mejora ventilación del follaje y aplica fungicida sistémico en las primeras 48 h de síntomas.';
   }
   if (lower.includes('envío') || lower.includes('envio') || lower.includes('montero')) {
-    return 'En CropDoctor coordinamos entregas a zonas del departamento. Compra insumos en el marketplace antes del mediodía para despacho prioritario según tu zona.';
+    return 'En SembrIA coordinamos entregas a zonas del departamento. Compra insumos en el marketplace antes del mediodía para despacho prioritario según tu zona.';
   }
   if (lower.includes('crédito') || lower.includes('credito')) {
     return 'Tu historial de diagnósticos en Mi Campo genera una bitácora fitosanitaria para evaluar microcréditos en BOB. Mantén registros actualizados de tus parcelas.';

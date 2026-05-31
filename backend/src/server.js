@@ -96,7 +96,7 @@ app.get('/api/p2p/mis-ventas', protect, getMisVentas);
 // Ruta de Check de Salud básica
 app.get('/', (req, res) => {
   res.status(200).json({
-    name: 'CropDoctor Agro API',
+    name: 'SembrIA API',
     version: '1.0.0',
     status: 'Servidor Express Activo 🌿',
     location: 'Santa Cruz, Bolivia'

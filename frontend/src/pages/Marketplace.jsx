@@ -346,7 +346,7 @@ export default function Marketplace({
       
       <div className="text-center max-w-2xl mx-auto mb-8">
         <h2 className="text-3xl font-extrabold text-primary-dark tracking-tight">
-          Marketplace CropDoctor
+          Marketplace SembrIA
         </h2>
         <p className="text-gray-500 mt-2">
           Tienda oficial de agroinsumos o compra/venta directa entre agricultores de Santa Cruz.
@@ -604,7 +604,7 @@ export default function Marketplace({
                 <div className="space-y-1">
                   <h5 className="font-bold text-primary-dark text-xs uppercase tracking-wider">Línea de Crédito Agro Pre-Aprobada</h5>
                   <p className="text-xs text-gray-600 leading-relaxed font-semibold">
-                    ¡Felicidades cruceño! Por tus diagnósticos activos en CropDoctor, tienes una línea de financiamiento lista. Este pedido se liquidará con un **10% de descuento directo** financiado por tu bitácora.
+                    ¡Felicidades cruceño! Por tus diagnósticos activos en SembrIA, tienes una línea de financiamiento lista. Este pedido se liquidará con un **10% de descuento directo** financiado por tu bitácora.
                   </p>
                 </div>
               </div>
